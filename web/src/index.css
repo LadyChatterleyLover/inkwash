@@ -1,0 +1,23 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body,
+#root {
+  height: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+svg {
+  vertical-align: baseline;
+}
+
+.vditor-preview__action {
+  display: none !important;
+}
+
+.vditor-toolbar__item {
+  margin-right: 6px;
+}

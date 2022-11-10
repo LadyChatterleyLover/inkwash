@@ -1,0 +1,31 @@
+.bg-1 {
+  animation: run2 50s linear infinite 0s;
+}
+.bg-2 {
+  animation: run3 15s linear infinite 1s;
+}
+@keyframes run2 {
+  0% {
+    left: 75%;
+  }
+  75% {
+    left: -16%;
+  }
+  75.01% {
+    left: 100%;
+  }
+  100% {
+    left: 75%;
+  }
+}
+@keyframes run3 {
+  0% {
+    width: 12%;
+  }
+  50% {
+    width: 15%;
+  }
+  100% {
+    width: 12%;
+  }
+}
