@@ -1,13 +1,20 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { getDocsList } from '@/http/api'
 import nodata from '@/assets/images/nodata.png'
 import { Button, Dropdown, Input, MenuProps, message, Modal, Tooltip } from 'antd'
-import { PlusOutlined, SortAscendingOutlined, AppstoreOutlined, UnorderedListOutlined } from '@ant-design/icons'
+import {
+  PlusOutlined,
+  SortAscendingOutlined,
+  AppstoreOutlined,
+  UnorderedListOutlined,
+  CheckOutlined,
+} from '@ant-design/icons'
 import { useNavigate } from 'react-router-dom'
 import ListSort from '@/components/home/listSort/ListSort'
 import TilSort from '@/components/home/tilSort/TilSort'
 import { Doc } from '@/types'
 import { newFolder } from '@/http/api'
+import { sortList } from '@/utils'
 
 const Home = () => {
   const navigate = useNavigate()
@@ -16,6 +23,8 @@ const Home = () => {
   const [currentMode, setCurrentMode] = useState('0')
   const [folderName, setFolderName] = useState('')
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const isFolderTop = useRef(true)
+  const [sortType, setSortType] = useState('default')
 
   const clickItem = (key: string) => {
     if (key === '1') {
@@ -49,6 +58,12 @@ const Home = () => {
     setFolderName('')
   }
 
+  const sort = (dataList: Doc[] = docsList, type: string) => {
+    setSortType(type)
+    const list = sortList(dataList, type, isFolderTop.current)
+    setDocsList([...list])
+  }
+
   const items: MenuProps['items'] = [
     {
       key: '1',
@@ -66,37 +81,77 @@ const Home = () => {
   const sortItems: MenuProps['items'] = [
     {
       key: '1',
-      label: <span>默认</span>,
+      label: (
+        <div className='flex items-center'>
+          <div className='w-4'>{sortType === 'default' ? <CheckOutlined /> : null}</div>
+          <span onClick={() => sort(docsList, 'default')} className='ml-2'>
+            默认
+          </span>
+        </div>
+      ),
     },
     {
       key: '2',
-      label: <span>更新时间</span>,
+      label: (
+        <div className='flex items-center'>
+          <div className='w-4'>{sortType === 'updateTime' ? <CheckOutlined /> : null}</div>
+          <span onClick={() => sort(docsList, 'updateTime')} className='ml-2'>
+            更新时间
+          </span>
+        </div>
+      ),
     },
     {
       key: '3',
-      label: <span>创建时间</span>,
+      label: (
+        <div className='flex items-center'>
+          <div className='w-4'>{sortType === 'createTime' ? <CheckOutlined /> : null}</div>
+          <span onClick={() => sort(docsList, 'createTime')} className='ml-2'>
+            创建时间
+          </span>
+        </div>
+      ),
     },
     {
       key: '4',
-      label: <span>文件名</span>,
+      label: (
+        <div className='flex items-center'>
+          <div className='w-4'>{sortType === 'name' ? <CheckOutlined /> : null}</div>
+          <span onClick={() => sort(docsList, 'name')} className='ml-2'>
+            文件名
+          </span>
+        </div>
+      ),
     },
     {
       key: '5',
-      label: <span>文件夹置顶</span>,
+      label: (
+        <div className='flex items-center'>
+          <div className='w-4'>{isFolderTop.current ? <CheckOutlined /> : null}</div>
+          <span
+            className='ml-2'
+            onClick={() => {
+              isFolderTop.current = !isFolderTop.current
+              sort(docsList, sortType)
+            }}
+          >
+            文件夹置顶
+          </span>
+        </div>
+      ),
     },
   ]
 
   const getList = () => {
     getDocsList({
       parentId,
-    }).then((res: any) => {
+    }).then((res) => {
       if (res.status) {
         res.body.map((item: Doc) => {
           item.showSetting = false
         })
-        setDocsList(res.body)
+        setDocsList(sortList(res.body, 'default', true))
       }
-      console.log(res)
     })
   }
 

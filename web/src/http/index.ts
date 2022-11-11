@@ -1,13 +1,13 @@
-import axios, { ResponseType } from 'axios'
+import axios, { AxiosRequestConfig, ResponseType } from 'axios'
 import QS from 'qs'
 import { message } from 'antd'
 
-const request = axios.create({
+const service = axios.create({
   baseURL: '/api',
   timeout: 10000,
 })
 
-request.interceptors.request.use(
+service.interceptors.request.use(
   (config) => {
     config.headers!['Authorization'] = 'Bearer ' + localStorage.getItem('docs-token')
     return config
@@ -17,7 +17,7 @@ request.interceptors.request.use(
   }
 )
 
-request.interceptors.response.use(
+service.interceptors.response.use(
   (response) => {
     if (response.data.status) {
       return Promise.resolve(response.data)
@@ -74,10 +74,23 @@ request.interceptors.response.use(
   }
 )
 
+interface IResponseData<T> {
+  body: T
+  code: number
+  status: boolean
+  msg: string
+}
+
+function request<T>(config: AxiosRequestConfig) {
+  return service
+    .request<IResponseData<T>>(config) // 这里是重点
+    .then((res) => res.data)
+}
+
 export default {
   //get请求
-  get(url: string, params?: any, responseType?: ResponseType, header?: any) {
-    return request({
+  get<T>(url: string, params?: any, responseType?: ResponseType, header?: any) {
+    return request<T>({
       method: 'get',
       url,
       headers: {
@@ -88,8 +101,8 @@ export default {
     })
   },
   //post请求
-  post(url: string, params?: any, header?: any) {
-    return request({
+  post<T>(url: string, params?: any, header?: any) {
+    return request<T>({
       method: 'post',
       url,
       headers: {
@@ -99,8 +112,8 @@ export default {
       data: params || {},
     })
   },
-  postFormData(url: string, params?: any, header?: any) {
-    return request({
+  postFormData<T>(url: string, params?: any, header?: any) {
+    return request<T>({
       method: 'post',
       url,
       headers: {
@@ -111,8 +124,8 @@ export default {
     })
   },
   //post请求
-  put(url: string, params?: any, header?: any) {
-    return request({
+  put<T>(url: string, params?: any, header?: any) {
+    return request<T>({
       method: 'put',
       url,
       headers: {
@@ -123,8 +136,8 @@ export default {
     })
   },
   // delete
-  delete(url: string, param?: any, header?: any) {
-    return request({
+  delete<T>(url: string, param?: any, header?: any) {
+    return request<T>({
       method: 'delete',
       url,
       headers: {
