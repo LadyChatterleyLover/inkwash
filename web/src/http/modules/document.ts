@@ -4,15 +4,8 @@ import { AxiosPromise } from 'axios'
 
 import $axios from '../index'
 
-interface Res<T> {
-  code: number
-  msg: string
-  status: boolean
-  body: T
-}
-
 // 获取文档列表
-export const getDocsList = (p: any) => $axios.get<Doc[]>('/inkwash/dos/list', p)
+export const getDocsList = (p: any) => $axios.get<Doc>('/inkwash/dos/list', p)
 
 // 获取文档详情
 export const getDocumentDetail = (p: any) => $axios.get('/inkwash/dos/detail', p)

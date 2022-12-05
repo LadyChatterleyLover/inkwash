@@ -20,7 +20,7 @@ service.interceptors.request.use(
 service.interceptors.response.use(
   (response) => {
     if (response.data.status) {
-      return Promise.resolve(response.data)
+      return response.data
     } else {
       message.error(response.data.message || response.data.msg || response.data.errMsg)
       return Promise.reject(response)
@@ -75,75 +75,43 @@ service.interceptors.response.use(
 )
 
 interface IResponseData<T> {
-  body: T
+  body: T[]
   code: number
   status: boolean
   msg: string
 }
 
-function request<T>(config: AxiosRequestConfig) {
-  return service
-    .request<IResponseData<T>>(config) // 这里是重点
-    .then((res) => res.data)
-}
-
 export default {
   //get请求
-  get<T>(url: string, params?: any, responseType?: ResponseType, header?: any) {
-    return request<T>({
-      method: 'get',
-      url,
+  get<T>(url: string, params?: any, responseType?: ResponseType, headers?: any): Promise<IResponseData<T>> {
+    return service.get(url, {
+      params: params ?? {},
       headers: {
-        ...(header || {}),
+        ...(headers || {}),
       },
-      responseType: responseType,
-      params: params || {},
+      responseType,
     })
   },
-  //post请求
-  post<T>(url: string, params?: any, header?: any) {
-    return request<T>({
-      method: 'post',
-      url,
-      headers: {
-        ...(header || {}),
-        'Content-Type': 'application/json;charse=UTF-8',
-      },
-      data: params || {},
-    })
+  // //post请求
+  post<T>(url: string, params?: any, _object = {}): Promise<IResponseData<T>> {
+    return service.post(url, params, { ..._object })
   },
-  postFormData<T>(url: string, params?: any, header?: any) {
-    return request<T>({
-      method: 'post',
-      url,
+  postFormData<T>(url: string, params?: any, headers?: any): Promise<IResponseData<T>> {
+    return service.post(url, {
       headers: {
-        ...(header || {}),
+        ...(headers || {}),
         'Content-Type': 'application/x-www-form-urlencoded',
       },
       data: QS.stringify(params) || {},
     })
   },
-  //post请求
-  put<T>(url: string, params?: any, header?: any) {
-    return request<T>({
-      method: 'put',
-      url,
-      headers: {
-        ...(header || {}),
-        'Content-Type': 'application/json;charse=UTF-8',
-      },
-      data: params || {},
-    })
+  put<T>(url: string, params?: any, _object = {}): Promise<IResponseData<T>> {
+    return service.put(url, params)
   },
-  // delete
-  delete<T>(url: string, param?: any, header?: any) {
-    return request<T>({
-      method: 'delete',
-      url,
-      headers: {
-        ...(header || {}),
-      },
-      params: param || {},
+  delete<T>(url: string, params?: any, _object = {}): Promise<IResponseData<T>> {
+    return service.delete(url, {
+      params: params,
+      ..._object,
     })
   },
 }

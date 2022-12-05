@@ -20,6 +20,7 @@
     "react-dom": "^18.2.0",
     "react-router": "^6.4.3",
     "react-router-dom": "^6.4.3",
+    "vditor": "^3.8.18",
     "x-data-spreadsheet": "^1.1.9"
   },
   "devDependencies": {

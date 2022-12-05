@@ -3,6 +3,7 @@
 **/
 
 import $axios from '../index'
+
 // 登录
 export const login = (p: any) => $axios.post('/inkwash/auth/login', p)
 
